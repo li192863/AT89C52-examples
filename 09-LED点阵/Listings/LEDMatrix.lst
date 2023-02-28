@@ -1,0 +1,61 @@
+C51 COMPILER V9.54   LEDMATRIX                                                             07/18/2022 23:25:03 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LEDMATRIX
+OBJECT MODULE PLACED IN .\Objects\LEDMatrix.obj
+COMPILER INVOKED BY: D:\Keil_v5\C51\BIN\C51.EXE LEDMatrix.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings
+                    -\LEDMatrix.lst) OBJECT(.\Objects\LEDMatrix.obj)
+
+line level    source
+
+   1          #include <REGX52.H>
+   2          #include "Delay.h"
+   3          
+   4          sbit RCK = P3 ^ 5; // RCLK
+   5          sbit SCK = P3 ^ 6; // SRCLK
+   6          sbit SER = P3 ^ 4; // SER
+   7          
+   8          #define LED_MATRIX_PORT P0
+   9          
+  10          void LEDMatrix_Init()
+  11          {
+  12   1          SCK = 0;
+  13   1          RCK = 0;
+  14   1      }
+  15          
+  16          void _74HC595_WriteByte(unsigned char Byte)
+  17          {
+  18   1          unsigned char i;
+  19   1          for (i = 0; i < 8; i++)
+  20   1          {
+  21   2              SER = Byte & (0x80 >> i);
+  22   2              SCK = 1; // 上升沿移位
+  23   2              SCK = 0; // 置0
+  24   2          }
+  25   1          RCK = 1; // 上升沿锁存
+  26   1          RCK = 0; 
+  27   1          
+  28   1      }
+  29          
+  30          void LEDMatrix_ShowColumn(unsigned char Column, unsigned char Data)
+  31          {
+  32   1          _74HC595_WriteByte(Data);
+  33   1          LED_MATRIX_PORT = ~(0x80 >> Column);
+  34   1          // 消影
+  35   1          Delay(1); // 延时
+  36   1          LED_MATRIX_PORT = 0xFF; // 清零
+  37   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     86    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
